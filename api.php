@@ -30,14 +30,28 @@ if ($route === 'payment/webhook') {
     $stmt->execute([$status, $paymentId, $payment['id']]);
 
     if (in_array($status, ['CONFIRMED', 'AUTHORIZED', 'DONE'], true)) {
+        if (!empty($payment['processed_at'])) {
+            echo 'OK';
+            exit;
+        }
         $planStmt = db()->prepare('SELECT * FROM plans WHERE id = ?');
         $planStmt->execute([$payment['plan_id']]);
         $plan = $planStmt->fetch();
         if ($plan) {
-            $start = date('Y-m-d H:i:s');
-            $end = date('Y-m-d H:i:s', strtotime('+' . (int) $plan['duration_days'] . ' days'));
-            $stmt = db()->prepare('INSERT INTO subscriptions (user_id, plan_id, status, start_at, end_at, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
-            $stmt->execute([$payment['user_id'], $plan['id'], 'active', $start, $end]);
+            $stmt = db()->prepare('SELECT * FROM subscriptions WHERE user_id = ? AND status = ? AND end_at >= NOW() ORDER BY end_at DESC LIMIT 1');
+            $stmt->execute([$payment['user_id'], 'active']);
+            $active = $stmt->fetch();
+            if ($active) {
+                $newEnd = date('Y-m-d H:i:s', strtotime($active['end_at'] . ' +' . (int) $plan['duration_days'] . ' days'));
+                $stmt = db()->prepare('UPDATE subscriptions SET end_at = ?, plan_id = ? WHERE id = ?');
+                $stmt->execute([$newEnd, $plan['id'], $active['id']]);
+            } else {
+                $start = date('Y-m-d H:i:s');
+                $end = date('Y-m-d H:i:s', strtotime('+' . (int) $plan['duration_days'] . ' days'));
+                $stmt = db()->prepare('INSERT INTO subscriptions (user_id, plan_id, status, start_at, end_at, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
+                $stmt->execute([$payment['user_id'], $plan['id'], 'active', $start, $end]);
+            }
+            db()->prepare('UPDATE payments SET processed_at = NOW() WHERE id = ?')->execute([$payment['id']]);
         }
     }
 

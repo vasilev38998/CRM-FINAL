@@ -76,10 +76,10 @@ class SubscriptionController
     {
         require_auth();
         $user = current_user();
-        $stmt = db()->prepare('SELECT subscriptions.*, plans.name AS plan_name FROM subscriptions JOIN plans ON subscriptions.plan_id = plans.id WHERE subscriptions.user_id = ? ORDER BY subscriptions.end_at DESC');
+        $stmt = db()->prepare('SELECT subscriptions.*, plans.name AS plan_name FROM subscriptions JOIN plans ON subscriptions.plan_id = plans.id WHERE subscriptions.user_id = ? ORDER BY subscriptions.end_at DESC LIMIT 1');
         $stmt->execute([$user['id']]);
-        $subscriptions = $stmt->fetchAll();
-        view('subscription/manage', ['subscriptions' => $subscriptions]);
+        $subscription = $stmt->fetch();
+        view('subscription/manage', ['subscription' => $subscription]);
     }
 
     private function makeToken(array $data, string $secret): string

@@ -45,6 +45,7 @@ CREATE TABLE payments (
     provider VARCHAR(50) NOT NULL,
     order_id VARCHAR(120) NOT NULL,
     payment_id VARCHAR(120),
+    processed_at DATETIME NULL,
     created_at DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (plan_id) REFERENCES plans(id)
