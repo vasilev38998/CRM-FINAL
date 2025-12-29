@@ -36,6 +36,10 @@ class SubscriptionController
             'NotificationURL' => $config['tinkoff']['notification_url'],
             'PayType' => 'O',
         ];
+        $receipt = $this->buildReceipt($plan, $user, $amount);
+        if ($receipt) {
+            $payload['Receipt'] = $receipt;
+        }
 
         $payload['Token'] = $this->makeToken($payload, $config['tinkoff']['secret_key']);
 
@@ -160,5 +164,40 @@ class SubscriptionController
             'response' => $response,
         ];
         @file_put_contents($logPath, json_encode($entry, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+    }
+
+    private function buildReceipt(array $plan, array $user, int $amount): ?array
+    {
+        $config = app_config();
+        $receiptConfig = $config['tinkoff']['receipt'] ?? [];
+        $email = $receiptConfig['email'] ?? ($user['email'] ?? '');
+        $phone = $receiptConfig['phone'] ?? '';
+        if ($email === '' && $phone === '') {
+            return null;
+        }
+        $taxation = $receiptConfig['taxation'] ?? 'usn_income';
+        $tax = $receiptConfig['tax'] ?? 'none';
+        $paymentMethod = $receiptConfig['payment_method'] ?? 'full_prepayment';
+        $paymentObject = $receiptConfig['payment_object'] ?? 'service';
+
+        $itemName = 'Подписка ' . $plan['name'];
+        $price = (int) round($plan['price'] * 100);
+
+        return [
+            'Email' => $email,
+            'Phone' => $phone,
+            'Taxation' => $taxation,
+            'Items' => [
+                [
+                    'Name' => $itemName,
+                    'Price' => $price,
+                    'Quantity' => 1,
+                    'Amount' => $amount,
+                    'Tax' => $tax,
+                    'PaymentMethod' => $paymentMethod,
+                    'PaymentObject' => $paymentObject,
+                ],
+            ],
+        ];
     }
 }

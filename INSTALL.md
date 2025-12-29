@@ -52,6 +52,12 @@
    - `notification_url` → адрес webhook (например, `https://coffee.example.com/api.php?route=payment/webhook`)
    - `success_url` → `https://coffee.example.com/index.php?route=subscription/success`
    - `fail_url` → `https://coffee.example.com/index.php?route=subscription/fail`
+   - `receipt` → параметры фискализации (если в Т‑Банке включены чеки)
+     - `taxation` → система налогообложения
+     - `tax` → ставка НДС
+     - `payment_method` → способ расчёта
+     - `payment_object` → предмет расчёта
+     - `email` или `phone` → контакт для чека
 
 ## 5. Где и что менять в `.env.php`
 

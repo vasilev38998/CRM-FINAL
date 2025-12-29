@@ -22,5 +22,13 @@ return [
         'notification_url' => 'https://example.com/api.php?route=payment/webhook',
         'success_url' => 'https://example.com/index.php?route=subscription/success',
         'fail_url' => 'https://example.com/index.php?route=subscription/fail',
+        'receipt' => [
+            'taxation' => 'usn_income',
+            'tax' => 'none',
+            'payment_method' => 'full_prepayment',
+            'payment_object' => 'service',
+            'email' => 'receipt@example.com',
+            'phone' => '',
+        ],
     ],
 ];
