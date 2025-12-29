@@ -1,7 +1,10 @@
 <h1>Расходы</h1>
 <a class="btn" href="index.php?route=expenses/create">Добавить расход</a>
 <a class="btn btn-secondary" href="index.php?route=import/expenses">Импорт CSV</a>
+<<<<<<< HEAD
 <a class="btn btn-secondary" href="index.php?route=export/expenses">Экспорт XLS</a>
+=======
+>>>>>>> origin/main
 <table class="table">
     <thead>
         <tr>

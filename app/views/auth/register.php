@@ -1,6 +1,9 @@
 <h1>Регистрация</h1>
 <form method="post">
+<<<<<<< HEAD
     <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Имя</label>
         <input type="text" name="name" required>

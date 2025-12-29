@@ -24,7 +24,10 @@ class SaleController
         $products = $stmt->fetchAll();
 
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $productId = (int) ($_POST['product_id'] ?? 0);
             $qty = (float) ($_POST['qty'] ?? 0);
             $price = (float) ($_POST['price'] ?? 0);
@@ -55,7 +58,10 @@ class SaleController
 
             $stmt = db()->prepare('INSERT INTO sales (coffee_shop_id, product_id, qty, price, total, cogs, sold_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
             $stmt->execute([current_shop_id(), $productId, $qty, $price, $qty * $price, $cogs, $date]);
+<<<<<<< HEAD
             audit_log('sales', 'create', ['product_id' => $productId, 'qty' => $qty, 'price' => $price]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=sales');
         }
 

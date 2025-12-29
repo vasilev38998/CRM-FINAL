@@ -38,6 +38,7 @@ class AdminController
         view('admin/plans', ['plans' => $plans]);
     }
 
+<<<<<<< HEAD
     public function tokens(): void
     {
         require_auth();
@@ -89,6 +90,8 @@ class AdminController
         view('admin/system', ['status' => $status]);
     }
 
+=======
+>>>>>>> origin/main
     public function editPlan(): void
     {
         require_auth();
@@ -101,7 +104,10 @@ class AdminController
             $plan = $stmt->fetch();
         }
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $price = (float) ($_POST['price'] ?? 0);
             $duration = (int) ($_POST['duration_days'] ?? 0);

@@ -23,7 +23,10 @@ class PurchaseController
         $stmt->execute([current_shop_id()]);
         $ingredients = $stmt->fetchAll();
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $ingredientId = (int) ($_POST['ingredient_id'] ?? 0);
             $qty = (float) ($_POST['qty'] ?? 0);
             $price = (float) ($_POST['price'] ?? 0);
@@ -51,7 +54,10 @@ class PurchaseController
 
             $stmt = db()->prepare('UPDATE ingredients SET stock_qty = ?, avg_price = ? WHERE id = ?');
             $stmt->execute([$newQty, $newAvg, $ingredientId]);
+<<<<<<< HEAD
             audit_log('purchases', 'create', ['ingredient_id' => $ingredientId, 'qty' => $qty, 'price' => $price]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=purchases');
         }
         view('purchases/create', ['ingredients' => $ingredients]);

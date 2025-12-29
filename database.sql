@@ -16,6 +16,7 @@ CREATE TABLE coffee_shops (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+<<<<<<< HEAD
 CREATE TABLE shop_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coffee_shop_id INT NOT NULL,
@@ -27,6 +28,8 @@ CREATE TABLE shop_users (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+=======
+>>>>>>> origin/main
 CREATE TABLE plans (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
@@ -62,6 +65,7 @@ CREATE TABLE payments (
     FOREIGN KEY (plan_id) REFERENCES plans(id)
 );
 
+<<<<<<< HEAD
 CREATE TABLE api_tokens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(64) NOT NULL,
@@ -69,6 +73,8 @@ CREATE TABLE api_tokens (
     created_at DATETIME NOT NULL
 );
 
+=======
+>>>>>>> origin/main
 CREATE TABLE ingredients (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coffee_shop_id INT NOT NULL,
@@ -136,6 +142,7 @@ CREATE TABLE expenses (
     FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
 );
 
+<<<<<<< HEAD
 CREATE TABLE audit_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
@@ -165,6 +172,8 @@ CREATE TABLE scenarios (
     FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
 );
 
+=======
+>>>>>>> origin/main
 CREATE TABLE cash_transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coffee_shop_id INT NOT NULL,

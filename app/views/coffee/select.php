@@ -4,7 +4,10 @@
     <a class="btn" href="index.php?route=coffee/create">Создать кофейню</a>
 <?php else: ?>
     <form method="post">
+<<<<<<< HEAD
         <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
         <div class="form-group">
             <label>Кофейня</label>
             <select name="coffee_shop_id">

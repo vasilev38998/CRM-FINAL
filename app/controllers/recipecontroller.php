@@ -27,7 +27,10 @@ class RecipeController
         $ingredients = $stmt->fetchAll();
 
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $productId = (int) ($_POST['product_id'] ?? 0);
             $ingredientId = (int) ($_POST['ingredient_id'] ?? 0);
             $qty = (float) ($_POST['qty'] ?? 0);
@@ -38,7 +41,10 @@ class RecipeController
             }
             $stmt = db()->prepare('INSERT INTO recipes (coffee_shop_id, product_id, ingredient_id, qty) VALUES (?, ?, ?, ?)');
             $stmt->execute([current_shop_id(), $productId, $ingredientId, $qty]);
+<<<<<<< HEAD
             audit_log('recipes', 'create', ['product_id' => $productId, 'ingredient_id' => $ingredientId, 'qty' => $qty]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=recipes');
         }
         view('recipes/create', ['products' => $products, 'ingredients' => $ingredients]);

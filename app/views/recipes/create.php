@@ -1,6 +1,9 @@
 <h1>Добавление ингредиента в рецепт</h1>
 <form method="post">
+<<<<<<< HEAD
     <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Напиток</label>
         <select name="product_id" required>

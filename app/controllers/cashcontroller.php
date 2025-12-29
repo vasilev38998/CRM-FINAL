@@ -42,7 +42,10 @@ class CashController
         require_subscription();
         require_shop();
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $type = sanitize_string($_POST['type'] ?? '');
             $source = sanitize_string($_POST['source'] ?? '');
             $category = sanitize_string($_POST['category'] ?? '');
@@ -58,7 +61,10 @@ class CashController
 
             $stmt = db()->prepare('INSERT INTO cash_transactions (coffee_shop_id, type, source, category, amount, note, transacted_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
             $stmt->execute([current_shop_id(), $type, $source, $category, $amount, $note, $date]);
+<<<<<<< HEAD
             audit_log('cash_transactions', 'create', ['type' => $type, 'source' => $source, 'amount' => $amount]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=cash');
         }
         view('cash/create');

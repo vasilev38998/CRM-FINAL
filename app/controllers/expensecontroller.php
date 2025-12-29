@@ -20,7 +20,10 @@ class ExpenseController
         require_subscription();
         require_shop();
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $category = sanitize_string($_POST['category'] ?? '');
             $amount = (float) ($_POST['amount'] ?? 0);
             $date = sanitize_string($_POST['date'] ?? date('Y-m-d'));
@@ -32,7 +35,10 @@ class ExpenseController
             }
             $stmt = db()->prepare('INSERT INTO expenses (coffee_shop_id, category, amount, note, spent_at) VALUES (?, ?, ?, ?, ?)');
             $stmt->execute([current_shop_id(), $category, $amount, $note, $date]);
+<<<<<<< HEAD
             audit_log('expenses', 'create', ['category' => $category, 'amount' => $amount]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=expenses');
         }
         view('expenses/create');

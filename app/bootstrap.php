@@ -29,6 +29,7 @@ function app_config(): array
     return $config;
 }
 
+<<<<<<< HEAD
 function log_event(string $message, array $context = []): void
 {
     $logPath = __DIR__ . '/../storage/app.log';
@@ -40,6 +41,8 @@ function log_event(string $message, array $context = []): void
     @file_put_contents($logPath, json_encode($entry, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
 }
 
+=======
+>>>>>>> origin/main
 function db(): PDO
 {
     static $pdo = null;
@@ -82,6 +85,7 @@ function is_post(): bool
     return $_SERVER['REQUEST_METHOD'] === 'POST';
 }
 
+<<<<<<< HEAD
 function csrf_token(): string
 {
     if (empty($_SESSION['csrf_token'])) {
@@ -107,6 +111,8 @@ function verify_csrf(): void
     }
 }
 
+=======
+>>>>>>> origin/main
 function current_user(): ?array
 {
     return $_SESSION['user'] ?? null;
@@ -130,6 +136,7 @@ function flash(string $key, ?string $message = null): ?string
     return $value;
 }
 
+<<<<<<< HEAD
 function user_ip(): string
 {
     return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -149,6 +156,8 @@ function audit_log(string $entity, string $action, array $payload = []): void
     ]);
 }
 
+=======
+>>>>>>> origin/main
 function has_active_subscription(int $userId): bool
 {
     $stmt = db()->prepare('SELECT COUNT(*) FROM subscriptions WHERE user_id = ? AND status = ? AND end_at >= NOW()');
@@ -172,6 +181,7 @@ function current_shop_id(): ?int
     return $_SESSION['coffee_shop_id'] ?? null;
 }
 
+<<<<<<< HEAD
 function user_shop_role(int $shopId, int $userId): ?string
 {
     $stmt = db()->prepare('SELECT role FROM shop_users WHERE coffee_shop_id = ? AND user_id = ?');
@@ -208,6 +218,13 @@ function require_shop(): void
         flash('error', 'Нет доступа к выбранной кофейне.');
         redirect('index.php?route=coffee/select');
     }
+=======
+function require_shop(): void
+{
+    if (!current_shop_id()) {
+        redirect('index.php?route=coffee/create');
+    }
+>>>>>>> origin/main
 }
 
 function is_admin(): bool
@@ -256,6 +273,7 @@ function csv_read(string $filePath, string $delimiter = ';'): array
     return $rows;
 }
 
+<<<<<<< HEAD
 function xlsx_read(string $filePath): array
 {
     $rows = [];
@@ -330,6 +348,8 @@ function export_excel_xml(array $headers, array $rows): string
     return $xml;
 }
 
+=======
+>>>>>>> origin/main
 function sanitize_string(?string $value): string
 {
     return trim((string) $value);

@@ -21,6 +21,7 @@
             <a href="index.php?route=expenses">Расходы</a>
             <a href="index.php?route=cash">ДДС</a>
             <a href="index.php?route=budgets">Бюджеты</a>
+<<<<<<< HEAD
             <a href="index.php?route=scenarios">Сценарии</a>
             <a href="index.php?route=analytics/pnl">P&L</a>
             <a href="index.php?route=analytics/network">Сводная аналитика</a>
@@ -36,6 +37,15 @@
                 <a href="index.php?route=admin/backups">Бэкапы</a>
                 <a href="index.php?route=admin/audit">Журнал действий</a>
                 <a href="index.php?route=admin/system">Статус системы</a>
+=======
+            <a href="index.php?route=analytics/pnl">P&L</a>
+            <a href="index.php?route=analytics/network">Сводная аналитика</a>
+            <a href="index.php?route=subscription/manage">Подписки</a>
+            <a href="index.php?route=coffee/select">Кофейни</a>
+            <?php if (is_admin()): ?>
+                <a href="index.php?route=admin/stats">Админка: сводка</a>
+                <a href="index.php?route=admin/plans">Админка тарифов</a>
+>>>>>>> origin/main
             <?php endif; ?>
             <a href="index.php?route=auth/logout">Выход</a>
         <?php else: ?>

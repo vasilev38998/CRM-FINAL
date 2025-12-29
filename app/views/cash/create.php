@@ -1,6 +1,9 @@
 <h1>Новая операция ДДС</h1>
 <form method="post">
+<<<<<<< HEAD
     <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Тип операции</label>
         <select name="type" required>

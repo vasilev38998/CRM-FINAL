@@ -20,7 +20,10 @@ class ProductController
         require_subscription();
         require_shop();
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $price = (float) ($_POST['price'] ?? 0);
             if ($name === '' || $price <= 0) {
@@ -30,7 +33,10 @@ class ProductController
             }
             $stmt = db()->prepare('INSERT INTO products (coffee_shop_id, name, price_sell, created_at) VALUES (?, ?, ?, NOW())');
             $stmt->execute([current_shop_id(), $name, $price]);
+<<<<<<< HEAD
             audit_log('products', 'create', ['name' => $name, 'price' => $price]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=products');
         }
         view('products/create');

@@ -72,7 +72,11 @@ class AnalyticsController
         $start = $_GET['from'] ?? date('Y-m-01');
         $end = $_GET['to'] ?? date('Y-m-t');
 
+<<<<<<< HEAD
         $stmt = db()->prepare('SELECT coffee_shop_id AS id FROM shop_users WHERE user_id = ?');
+=======
+        $stmt = db()->prepare('SELECT id FROM coffee_shops WHERE user_id = ?');
+>>>>>>> origin/main
         $stmt->execute([$user['id']]);
         $shopIds = array_column($stmt->fetchAll(), 'id');
         if (!$shopIds) {
@@ -112,6 +116,7 @@ class AnalyticsController
             'end' => $end,
         ]);
     }
+<<<<<<< HEAD
 
     public function abc(): void
     {
@@ -181,4 +186,6 @@ class AnalyticsController
         }
         return $result;
     }
+=======
+>>>>>>> origin/main
 }

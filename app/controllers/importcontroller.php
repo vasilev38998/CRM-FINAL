@@ -28,13 +28,20 @@ class ImportController
         $rows = [];
 
         if (is_post()) {
+<<<<<<< HEAD
             verify_csrf();
+=======
+>>>>>>> origin/main
             $action = $_POST['action'] ?? 'preview';
             if ($action === 'preview' && isset($_FILES['csv_file'])) {
                 $file = $_FILES['csv_file'];
                 if ($file['error'] === UPLOAD_ERR_OK) {
+<<<<<<< HEAD
                     $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                     $rows = tabular_read($file['tmp_name'], $extension);
+=======
+                    $rows = csv_read($file['tmp_name']);
+>>>>>>> origin/main
                     [$rows, $errors] = $this->validateRows($type, $rows);
                     $_SESSION['import'][$type] = $rows;
                 } else {
@@ -49,7 +56,10 @@ class ImportController
                 } else {
                     $this->importRows($type, $rows);
                     unset($_SESSION['import'][$type]);
+<<<<<<< HEAD
                     audit_log('imports', 'import', ['type' => $type, 'rows' => count($rows)]);
+=======
+>>>>>>> origin/main
                     flash('success', 'Импорт выполнен.');
                     redirect('index.php?route=' . $type);
                 }

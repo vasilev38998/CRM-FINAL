@@ -1,7 +1,10 @@
 <h1>Продажи</h1>
 <a class="btn" href="index.php?route=sales/create">Добавить продажу</a>
 <a class="btn btn-secondary" href="index.php?route=import/sales">Импорт CSV</a>
+<<<<<<< HEAD
 <a class="btn btn-secondary" href="index.php?route=export/sales">Экспорт XLS</a>
+=======
+>>>>>>> origin/main
 <table class="table">
     <thead>
         <tr>
