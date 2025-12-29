@@ -40,6 +40,7 @@ class SubscriptionController
         $payload['Token'] = $this->makeToken($payload, $config['tinkoff']['secret_key']);
 
         $response = $this->sendRequest('https://securepay.tinkoff.ru/v2/Init', $payload);
+        $this->logPaymentAttempt($orderId, $payload, $response);
 
         $stmt = db()->prepare('INSERT INTO payments (user_id, plan_id, amount, status, provider, order_id, payment_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
         $stmt->execute([
@@ -56,7 +57,8 @@ class SubscriptionController
             redirect($response['PaymentURL']);
         }
 
-        flash('error', 'Не удалось создать платёж. Проверьте настройки Тинькофф.');
+        $errorMessage = $this->buildPaymentErrorMessage($response);
+        flash('error', $errorMessage);
         redirect('index.php?route=subscription/plans');
     }
 
@@ -101,12 +103,62 @@ class SubscriptionController
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
         $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if (!$response) {
-            return [];
+            return [
+                '_error' => $curlError ?: 'Пустой ответ от сервера оплаты.',
+                '_http_code' => $httpCode,
+            ];
         }
         $data = json_decode($response, true);
-        return is_array($data) ? $data : [];
+        if (!is_array($data)) {
+            return [
+                '_error' => 'Некорректный ответ от сервера оплаты.',
+                '_http_code' => $httpCode,
+                '_raw' => $response,
+            ];
+        }
+        $data['_http_code'] = $httpCode;
+        return $data;
+    }
+
+    private function buildPaymentErrorMessage(array $response): string
+    {
+        if (!empty($response['_error'])) {
+            return 'Не удалось создать платёж. Ошибка соединения: ' . $response['_error'];
+        }
+        if (!empty($response['Message'])) {
+            $code = $response['ErrorCode'] ?? 'N/A';
+            return 'Не удалось создать платёж. Код ошибки: ' . $code . '. ' . $response['Message'];
+        }
+        if (!empty($response['Details'])) {
+            return 'Не удалось создать платёж. ' . $response['Details'];
+        }
+        return 'Не удалось создать платёж. Проверьте настройки Тинькофф.';
+    }
+
+    private function logPaymentAttempt(string $orderId, array $payload, array $response): void
+    {
+        $logPath = __DIR__ . '/../../storage/payments.log';
+        $entry = [
+            'time' => date('Y-m-d H:i:s'),
+            'order_id' => $orderId,
+            'payload' => [
+                'TerminalKey' => $payload['TerminalKey'] ?? null,
+                'Amount' => $payload['Amount'] ?? null,
+                'OrderId' => $payload['OrderId'] ?? null,
+                'Description' => $payload['Description'] ?? null,
+                'SuccessURL' => $payload['SuccessURL'] ?? null,
+                'FailURL' => $payload['FailURL'] ?? null,
+                'NotificationURL' => $payload['NotificationURL'] ?? null,
+            ],
+            'response' => $response,
+        ];
+        @file_put_contents($logPath, json_encode($entry, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 }
