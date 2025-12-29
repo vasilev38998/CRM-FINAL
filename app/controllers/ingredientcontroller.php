@@ -20,6 +20,10 @@ class IngredientController
         require_subscription();
         require_shop();
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $unit = sanitize_string($_POST['unit'] ?? '');
             $qty = (float) ($_POST['qty'] ?? 0);
@@ -32,6 +36,10 @@ class IngredientController
             }
             $stmt = db()->prepare('INSERT INTO ingredients (coffee_shop_id, name, unit, stock_qty, avg_price, min_stock_qty, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())');
             $stmt->execute([current_shop_id(), $name, $unit, $qty, $price, $minQty]);
+<<<<<<< HEAD
+            audit_log('ingredients', 'create', ['name' => $name, 'qty' => $qty, 'min_qty' => $minQty]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=ingredients');
         }
         view('ingredients/create');

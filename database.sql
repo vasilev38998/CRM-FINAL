@@ -16,6 +16,20 @@ CREATE TABLE coffee_shops (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+<<<<<<< HEAD
+CREATE TABLE shop_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    coffee_shop_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    UNIQUE KEY shop_user_unique (coffee_shop_id, user_id),
+    FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+=======
+>>>>>>> origin/main
 CREATE TABLE plans (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
@@ -51,6 +65,16 @@ CREATE TABLE payments (
     FOREIGN KEY (plan_id) REFERENCES plans(id)
 );
 
+<<<<<<< HEAD
+CREATE TABLE api_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(64) NOT NULL,
+    label VARCHAR(120) NOT NULL,
+    created_at DATETIME NOT NULL
+);
+
+=======
+>>>>>>> origin/main
 CREATE TABLE ingredients (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coffee_shop_id INT NOT NULL,
@@ -118,6 +142,38 @@ CREATE TABLE expenses (
     FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
 );
 
+<<<<<<< HEAD
+CREATE TABLE audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    coffee_shop_id INT NULL,
+    entity VARCHAR(120) NOT NULL,
+    action VARCHAR(120) NOT NULL,
+    payload TEXT,
+    created_at DATETIME NOT NULL
+);
+
+CREATE TABLE login_attempts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(120) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    last_attempt DATETIME NOT NULL
+);
+
+CREATE TABLE scenarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    coffee_shop_id INT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    margin_change DECIMAL(6,2) NOT NULL DEFAULT 0,
+    cost_change DECIMAL(6,2) NOT NULL DEFAULT 0,
+    volume_change DECIMAL(6,2) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
+);
+
+=======
+>>>>>>> origin/main
 CREATE TABLE cash_transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coffee_shop_id INT NOT NULL,

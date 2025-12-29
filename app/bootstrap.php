@@ -29,6 +29,20 @@ function app_config(): array
     return $config;
 }
 
+<<<<<<< HEAD
+function log_event(string $message, array $context = []): void
+{
+    $logPath = __DIR__ . '/../storage/app.log';
+    $entry = [
+        'time' => date('Y-m-d H:i:s'),
+        'message' => $message,
+        'context' => $context,
+    ];
+    @file_put_contents($logPath, json_encode($entry, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+}
+
+=======
+>>>>>>> origin/main
 function db(): PDO
 {
     static $pdo = null;
@@ -71,6 +85,34 @@ function is_post(): bool
     return $_SERVER['REQUEST_METHOD'] === 'POST';
 }
 
+<<<<<<< HEAD
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(16));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token()) . '">';
+}
+
+function verify_csrf(): void
+{
+    if (!is_post()) {
+        return;
+    }
+    $token = $_POST['csrf_token'] ?? '';
+    if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+        flash('error', 'Ошибка безопасности. Обновите страницу и попробуйте снова.');
+        redirect($_SERVER['HTTP_REFERER'] ?? 'index.php');
+    }
+}
+
+=======
+>>>>>>> origin/main
 function current_user(): ?array
 {
     return $_SESSION['user'] ?? null;
@@ -94,6 +136,28 @@ function flash(string $key, ?string $message = null): ?string
     return $value;
 }
 
+<<<<<<< HEAD
+function user_ip(): string
+{
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+function audit_log(string $entity, string $action, array $payload = []): void
+{
+    $user = current_user();
+    $shopId = current_shop_id();
+    $stmt = db()->prepare('INSERT INTO audit_logs (user_id, coffee_shop_id, entity, action, payload, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
+    $stmt->execute([
+        $user['id'] ?? null,
+        $shopId,
+        $entity,
+        $action,
+        json_encode($payload, JSON_UNESCAPED_UNICODE),
+    ]);
+}
+
+=======
+>>>>>>> origin/main
 function has_active_subscription(int $userId): bool
 {
     $stmt = db()->prepare('SELECT COUNT(*) FROM subscriptions WHERE user_id = ? AND status = ? AND end_at >= NOW()');
@@ -117,11 +181,50 @@ function current_shop_id(): ?int
     return $_SESSION['coffee_shop_id'] ?? null;
 }
 
+<<<<<<< HEAD
+function user_shop_role(int $shopId, int $userId): ?string
+{
+    $stmt = db()->prepare('SELECT role FROM shop_users WHERE coffee_shop_id = ? AND user_id = ?');
+    $stmt->execute([$shopId, $userId]);
+    $role = $stmt->fetchColumn();
+    return $role ? (string) $role : null;
+}
+
+function require_shop_role(array $roles): void
+{
+    $user = current_user();
+    if (!$user) {
+        redirect('index.php?route=auth/login');
+    }
+    $shopId = current_shop_id();
+    $role = $shopId ? user_shop_role($shopId, (int) $user['id']) : null;
+    if (!$role || !in_array($role, $roles, true)) {
+        flash('error', 'Недостаточно прав доступа.');
+        redirect('index.php?route=dashboard');
+    }
+}
+
+function require_shop(): void
+{
+    $shopId = current_shop_id();
+    if (!$shopId) {
+        redirect('index.php?route=coffee/create');
+    }
+    $user = current_user();
+    if (!$user) {
+        redirect('index.php?route=auth/login');
+    }
+    if (!user_shop_role($shopId, (int) $user['id'])) {
+        flash('error', 'Нет доступа к выбранной кофейне.');
+        redirect('index.php?route=coffee/select');
+    }
+=======
 function require_shop(): void
 {
     if (!current_shop_id()) {
         redirect('index.php?route=coffee/create');
     }
+>>>>>>> origin/main
 }
 
 function is_admin(): bool
@@ -170,6 +273,83 @@ function csv_read(string $filePath, string $delimiter = ';'): array
     return $rows;
 }
 
+<<<<<<< HEAD
+function xlsx_read(string $filePath): array
+{
+    $rows = [];
+    if (!class_exists('ZipArchive')) {
+        return $rows;
+    }
+    $zip = new ZipArchive();
+    if ($zip->open($filePath) !== true) {
+        return $rows;
+    }
+    $sharedStrings = [];
+    $sharedXml = $zip->getFromName('xl/sharedStrings.xml');
+    if ($sharedXml) {
+        $xml = simplexml_load_string($sharedXml);
+        if ($xml && isset($xml->si)) {
+            foreach ($xml->si as $si) {
+                $sharedStrings[] = (string) $si->t;
+            }
+        }
+    }
+    $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+    if ($sheetXml) {
+        $xml = simplexml_load_string($sheetXml);
+        if ($xml && isset($xml->sheetData->row)) {
+            foreach ($xml->sheetData->row as $row) {
+                $rowData = [];
+                foreach ($row->c as $c) {
+                    $value = (string) $c->v;
+                    $type = (string) $c['t'];
+                    if ($type === 's') {
+                        $idx = (int) $value;
+                        $value = $sharedStrings[$idx] ?? '';
+                    }
+                    $rowData[] = $value;
+                }
+                $rows[] = $rowData;
+            }
+        }
+    }
+    $zip->close();
+    return $rows;
+}
+
+function tabular_read(string $filePath, string $extension): array
+{
+    if ($extension === 'xlsx') {
+        return xlsx_read($filePath);
+    }
+    return csv_read($filePath);
+}
+
+function export_excel_xml(array $headers, array $rows): string
+{
+    $xml = '<?xml version="1.0"?>';
+    $xml .= '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+    $xml .= 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
+    $xml .= '<Worksheet ss:Name="Sheet1"><Table>';
+    $xml .= '<Row>';
+    foreach ($headers as $header) {
+        $xml .= '<Cell><Data ss:Type="String">' . htmlspecialchars((string) $header) . '</Data></Cell>';
+    }
+    $xml .= '</Row>';
+    foreach ($rows as $row) {
+        $xml .= '<Row>';
+        foreach ($row as $cell) {
+            $type = is_numeric($cell) ? 'Number' : 'String';
+            $xml .= '<Cell><Data ss:Type="' . $type . '">' . htmlspecialchars((string) $cell) . '</Data></Cell>';
+        }
+        $xml .= '</Row>';
+    }
+    $xml .= '</Table></Worksheet></Workbook>';
+    return $xml;
+}
+
+=======
+>>>>>>> origin/main
 function sanitize_string(?string $value): string
 {
     return trim((string) $value);

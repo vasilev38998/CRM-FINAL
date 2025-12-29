@@ -1,5 +1,9 @@
 <h1>Новая закупка</h1>
 <form method="post">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Ингредиент</label>
         <select name="ingredient_id" required>

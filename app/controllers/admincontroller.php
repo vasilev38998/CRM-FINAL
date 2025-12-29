@@ -38,6 +38,60 @@ class AdminController
         view('admin/plans', ['plans' => $plans]);
     }
 
+<<<<<<< HEAD
+    public function tokens(): void
+    {
+        require_auth();
+        require_admin();
+        if (is_post()) {
+            verify_csrf();
+            $label = sanitize_string($_POST['label'] ?? '');
+            if ($label === '') {
+                flash('error', 'Укажите название токена.');
+                redirect('index.php?route=admin/tokens');
+            }
+            $token = bin2hex(random_bytes(16));
+            $stmt = db()->prepare('INSERT INTO api_tokens (token, label, created_at) VALUES (?, ?, NOW())');
+            $stmt->execute([$token, $label]);
+            flash('success', 'Токен создан: ' . $token);
+            redirect('index.php?route=admin/tokens');
+        }
+        $tokens = db()->query('SELECT * FROM api_tokens ORDER BY created_at DESC')->fetchAll();
+        view('admin/tokens', ['tokens' => $tokens]);
+    }
+
+    public function audit(): void
+    {
+        require_auth();
+        require_admin();
+        $stmt = db()->query('SELECT audit_logs.*, users.email FROM audit_logs LEFT JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC LIMIT 200');
+        $logs = $stmt->fetchAll();
+        view('admin/audit', ['logs' => $logs]);
+    }
+
+    public function system(): void
+    {
+        require_auth();
+        require_admin();
+        $dbOk = false;
+        try {
+            db()->query('SELECT 1');
+            $dbOk = true;
+        } catch (Exception $e) {
+            $dbOk = false;
+            log_event('DB status error', ['error' => $e->getMessage()]);
+        }
+        $status = [
+            'php_version' => PHP_VERSION,
+            'db_status' => $dbOk ? 'OK' : 'Ошибка',
+            'uploads_writable' => is_writable(__DIR__ . '/../../uploads'),
+            'storage_writable' => is_writable(__DIR__ . '/../../storage'),
+        ];
+        view('admin/system', ['status' => $status]);
+    }
+
+=======
+>>>>>>> origin/main
     public function editPlan(): void
     {
         require_auth();
@@ -50,6 +104,10 @@ class AdminController
             $plan = $stmt->fetch();
         }
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $price = (float) ($_POST['price'] ?? 0);
             $duration = (int) ($_POST['duration_days'] ?? 0);

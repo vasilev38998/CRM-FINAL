@@ -1,6 +1,10 @@
 <h1>Закупки</h1>
 <a class="btn" href="index.php?route=purchases/create">Добавить закупку</a>
 <a class="btn btn-secondary" href="index.php?route=import/purchases">Импорт CSV</a>
+<<<<<<< HEAD
+<a class="btn btn-secondary" href="index.php?route=export/purchases">Экспорт XLS</a>
+=======
+>>>>>>> origin/main
 <table class="table">
     <thead>
         <tr>

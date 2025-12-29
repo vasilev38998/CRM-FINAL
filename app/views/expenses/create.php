@@ -1,5 +1,9 @@
 <h1>Новый расход</h1>
 <form method="post">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Категория</label>
         <input type="text" name="category" required>

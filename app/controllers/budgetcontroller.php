@@ -20,6 +20,10 @@ class BudgetController
         require_subscription();
         require_shop();
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $start = sanitize_string($_POST['start'] ?? '');
             $end = sanitize_string($_POST['end'] ?? '');
@@ -31,6 +35,10 @@ class BudgetController
             $stmt = db()->prepare('INSERT INTO budgets (coffee_shop_id, name, period_start, period_end, created_at) VALUES (?, ?, ?, ?, NOW())');
             $stmt->execute([current_shop_id(), $name, $start, $end]);
             $budgetId = (int) db()->lastInsertId();
+<<<<<<< HEAD
+            audit_log('budgets', 'create', ['name' => $name, 'period' => [$start, $end]]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=budgets/edit&id=' . $budgetId);
         }
         view('budgets/create');
@@ -50,6 +58,10 @@ class BudgetController
             redirect('index.php?route=budgets');
         }
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $category = sanitize_string($_POST['category'] ?? '');
             $amount = (float) ($_POST['amount'] ?? 0);
             $type = sanitize_string($_POST['type'] ?? '');
@@ -60,6 +72,10 @@ class BudgetController
             }
             $stmt = db()->prepare('INSERT INTO budget_items (budget_id, category, amount_plan, type) VALUES (?, ?, ?, ?)');
             $stmt->execute([$budgetId, $category, $amount, $type]);
+<<<<<<< HEAD
+            audit_log('budget_items', 'create', ['budget_id' => $budgetId, 'category' => $category, 'amount' => $amount]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=budgets/edit&id=' . $budgetId);
         }
         $items = $this->loadItems($budgetId);

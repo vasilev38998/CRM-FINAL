@@ -1,6 +1,10 @@
 <h1>Бюджет: <?php echo htmlspecialchars($budget['name']); ?></h1>
 <p>Период: <?php echo htmlspecialchars($budget['period_start']); ?> — <?php echo htmlspecialchars($budget['period_end']); ?></p>
 <form method="post">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Тип статьи</label>
         <select name="type" required>

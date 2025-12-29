@@ -1,5 +1,9 @@
 <h1>Новый ингредиент</h1>
 <form method="post">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Название</label>
         <input type="text" name="name" required>

@@ -72,7 +72,11 @@ class AnalyticsController
         $start = $_GET['from'] ?? date('Y-m-01');
         $end = $_GET['to'] ?? date('Y-m-t');
 
+<<<<<<< HEAD
+        $stmt = db()->prepare('SELECT coffee_shop_id AS id FROM shop_users WHERE user_id = ?');
+=======
         $stmt = db()->prepare('SELECT id FROM coffee_shops WHERE user_id = ?');
+>>>>>>> origin/main
         $stmt->execute([$user['id']]);
         $shopIds = array_column($stmt->fetchAll(), 'id');
         if (!$shopIds) {
@@ -112,4 +116,76 @@ class AnalyticsController
             'end' => $end,
         ]);
     }
+<<<<<<< HEAD
+
+    public function abc(): void
+    {
+        require_auth();
+        require_subscription();
+        require_shop();
+        $stmt = db()->prepare('SELECT products.name, SUM(sales.total) AS revenue FROM sales JOIN products ON sales.product_id = products.id WHERE sales.coffee_shop_id = ? GROUP BY products.name ORDER BY revenue DESC');
+        $stmt->execute([current_shop_id()]);
+        $rows = $stmt->fetchAll();
+        $total = 0.0;
+        foreach ($rows as $row) {
+            $total += (float) $row['revenue'];
+        }
+        $result = [];
+        $cum = 0.0;
+        foreach ($rows as $row) {
+            $revenue = (float) $row['revenue'];
+            $share = $total > 0 ? ($revenue / $total) * 100 : 0;
+            $cum += $share;
+            $abc = $cum <= 80 ? 'A' : ($cum <= 95 ? 'B' : 'C');
+            $result[] = [
+                'name' => $row['name'],
+                'revenue' => $revenue,
+                'share' => $share,
+                'abc' => $abc,
+            ];
+        }
+
+        $xyz = $this->calculateXyz();
+        foreach ($result as &$item) {
+            $item['xyz'] = $xyz[$item['name']] ?? 'Z';
+        }
+
+        view('analytics/abc', ['items' => $result]);
+    }
+
+    public function seasonality(): void
+    {
+        require_auth();
+        require_subscription();
+        require_shop();
+        $stmt = db()->prepare(\"SELECT DATE_FORMAT(sold_at, '%Y-%m') AS period, SUM(total) AS revenue FROM sales WHERE coffee_shop_id = ? GROUP BY period ORDER BY period\");
+        $stmt->execute([current_shop_id()]);
+        $rows = $stmt->fetchAll();
+        view('analytics/seasonality', ['rows' => $rows]);
+    }
+
+    private function calculateXyz(): array
+    {
+        $stmt = db()->prepare(\"SELECT products.name, DATE_FORMAT(sales.sold_at, '%Y-%m') AS period, SUM(sales.total) AS revenue FROM sales JOIN products ON sales.product_id = products.id WHERE sales.coffee_shop_id = ? GROUP BY products.name, period ORDER BY products.name, period\");
+        $stmt->execute([current_shop_id()]);
+        $rows = $stmt->fetchAll();
+        $data = [];
+        foreach ($rows as $row) {
+            $data[$row['name']][] = (float) $row['revenue'];
+        }
+        $result = [];
+        foreach ($data as $name => $values) {
+            $mean = array_sum($values) / max(count($values), 1);
+            $variance = 0.0;
+            foreach ($values as $value) {
+                $variance += pow($value - $mean, 2);
+            }
+            $std = count($values) > 0 ? sqrt($variance / count($values)) : 0;
+            $cv = $mean > 0 ? $std / $mean : 1;
+            $result[$name] = $cv <= 0.1 ? 'X' : ($cv <= 0.25 ? 'Y' : 'Z');
+        }
+        return $result;
+    }
+=======
+>>>>>>> origin/main
 }

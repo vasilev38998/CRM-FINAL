@@ -6,15 +6,34 @@ class AuthController
     public function login(): void
     {
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
             $email = sanitize_string($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
+            if ($this->isBlocked($email, user_ip())) {
+                flash('error', 'Слишком много попыток входа. Попробуйте позже.');
+                view('auth/login');
+                return;
+            }
+=======
+            $email = sanitize_string($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+>>>>>>> origin/main
             $stmt = db()->prepare('SELECT * FROM users WHERE email = ?');
             $stmt->execute([$email]);
             $user = $stmt->fetch();
             if ($user && password_verify($password, $user['password_hash'])) {
+<<<<<<< HEAD
+                $this->clearAttempts($email, user_ip());
                 $_SESSION['user'] = $user;
                 redirect('index.php?route=dashboard');
             }
+            $this->registerAttempt($email, user_ip());
+=======
+                $_SESSION['user'] = $user;
+                redirect('index.php?route=dashboard');
+            }
+>>>>>>> origin/main
             flash('error', 'Неверный email или пароль.');
         }
         view('auth/login');
@@ -23,6 +42,10 @@ class AuthController
     public function register(): void
     {
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $name = sanitize_string($_POST['name'] ?? '');
             $email = sanitize_string($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
@@ -49,6 +72,10 @@ class AuthController
             $stmt = db()->prepare('SELECT * FROM users WHERE id = ?');
             $stmt->execute([$userId]);
             $_SESSION['user'] = $stmt->fetch();
+<<<<<<< HEAD
+            audit_log('users', 'register', ['user_id' => $userId]);
+=======
+>>>>>>> origin/main
             redirect('index.php?route=coffee/create');
         }
         view('auth/register');
@@ -63,6 +90,10 @@ class AuthController
     public function forgot(): void
     {
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $email = sanitize_string($_POST['email'] ?? '');
             $stmt = db()->prepare('SELECT * FROM users WHERE email = ?');
             $stmt->execute([$email]);
@@ -88,6 +119,10 @@ class AuthController
             redirect('index.php?route=auth/forgot');
         }
         if (is_post()) {
+<<<<<<< HEAD
+            verify_csrf();
+=======
+>>>>>>> origin/main
             $password = $_POST['password'] ?? '';
             if ($password === '') {
                 flash('error', 'Введите новый пароль.');
@@ -109,4 +144,43 @@ class AuthController
         }
         view('auth/reset', ['token' => $token]);
     }
+<<<<<<< HEAD
+
+    private function registerAttempt(string $email, string $ip): void
+    {
+        $stmt = db()->prepare('SELECT * FROM login_attempts WHERE email = ? AND ip_address = ?');
+        $stmt->execute([$email, $ip]);
+        $row = $stmt->fetch();
+        if ($row) {
+            $stmt = db()->prepare('UPDATE login_attempts SET attempts = attempts + 1, last_attempt = NOW() WHERE id = ?');
+            $stmt->execute([$row['id']]);
+            return;
+        }
+        $stmt = db()->prepare('INSERT INTO login_attempts (email, ip_address, attempts, last_attempt) VALUES (?, ?, ?, NOW())');
+        $stmt->execute([$email, $ip, 1]);
+    }
+
+    private function clearAttempts(string $email, string $ip): void
+    {
+        $stmt = db()->prepare('DELETE FROM login_attempts WHERE email = ? AND ip_address = ?');
+        $stmt->execute([$email, $ip]);
+    }
+
+    private function isBlocked(string $email, string $ip): bool
+    {
+        $stmt = db()->prepare('SELECT attempts, last_attempt FROM login_attempts WHERE email = ? AND ip_address = ?');
+        $stmt->execute([$email, $ip]);
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+        $last = strtotime($row['last_attempt']);
+        if ($last < strtotime('-15 minutes')) {
+            $this->clearAttempts($email, $ip);
+            return false;
+        }
+        return (int) $row['attempts'] >= 5;
+    }
+=======
+>>>>>>> origin/main
 }

@@ -1,5 +1,9 @@
 <h1>Импорт закупок (CSV)</h1>
+<<<<<<< HEAD
+<p>Шаблон: <a href="assets/csv/purchases_template.csv">скачать</a>. Формат: название ингредиента; количество; цена; дата. Поддерживаются CSV и XLSX.</p>
+=======
 <p>Шаблон: <a href="assets/csv/purchases_template.csv">скачать</a>. Формат: название ингредиента; количество; цена; дата.</p>
+>>>>>>> origin/main
 <?php if ($errors): ?>
     <div class="alert alert-error">
         <?php foreach ($errors as $error): ?>
@@ -8,10 +12,18 @@
     </div>
 <?php endif; ?>
 <form method="post" enctype="multipart/form-data">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+    <input type="hidden" name="action" value="preview">
+    <div class="form-group">
+        <label>CSV файл</label>
+        <input type="file" name="csv_file" accept=".csv,.xlsx" required>
+=======
     <input type="hidden" name="action" value="preview">
     <div class="form-group">
         <label>CSV файл</label>
         <input type="file" name="csv_file" accept=".csv" required>
+>>>>>>> origin/main
     </div>
     <button type="submit">Предпросмотр</button>
 </form>
@@ -39,6 +51,10 @@
         </tbody>
     </table>
     <form method="post">
+<<<<<<< HEAD
+        <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
         <input type="hidden" name="action" value="import">
         <button type="submit">Импортировать</button>
     </form>

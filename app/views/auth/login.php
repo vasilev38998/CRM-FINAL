@@ -1,5 +1,9 @@
 <h1>Вход</h1>
 <form method="post">
+<<<<<<< HEAD
+    <?php echo csrf_field(); ?>
+=======
+>>>>>>> origin/main
     <div class="form-group">
         <label>Email</label>
         <input type="email" name="email" required>
