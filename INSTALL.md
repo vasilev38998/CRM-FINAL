@@ -1,0 +1,155 @@
+# Инструкция по установке CoffeeFin на shared-хостинг Beget
+
+> Вся установка выполняется **без SSH и без консоли** — через файловый менеджер и панель Beget.
+
+## 1. Какие файлы загрузить в корень сайта
+
+1. Скачайте весь проект и загрузите **все файлы и папки** в корень домена, чтобы структура выглядела так:
+   ```
+   /index.php
+   /api.php
+   /.env.php
+   /app/
+   /assets/
+   /uploads/
+   /storage/
+   /database.sql
+   /INSTALL.md
+   ```
+2. Ничего не переносите в подкаталоги — всё работает из корня домена.
+
+## 2. Создание базы данных в Beget
+
+1. Откройте панель Beget → **MySQL/PostgreSQL** → **Создать базу данных**.
+2. Запишите:
+   - Имя базы данных
+   - Пользователя БД
+   - Пароль
+   - Хост (обычно `localhost`)
+
+## 3. Импорт структуры БД
+
+1. В панели Beget откройте **phpMyAdmin** (или PgAdmin для PostgreSQL).
+2. Выберите созданную базу данных.
+3. Вкладка **Импорт** → загрузите файл `database.sql` из корня сайта.
+4. Нажмите **Выполнить**.
+
+> Если вы уже устанавливали предыдущую версию проекта, добавьте в таблицу `payments` поле `processed_at` через phpMyAdmin:
+>
+> ```sql
+> ALTER TABLE payments ADD COLUMN processed_at DATETIME NULL;
+> ```
+>
+> Для обновления до версии с бюджетами/кассой/минимальными остатками выполните:
+>
+> ```sql
+> ALTER TABLE ingredients ADD COLUMN min_stock_qty DECIMAL(12,4) NOT NULL DEFAULT 0;
+>
+> CREATE TABLE cash_transactions (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     coffee_shop_id INT NOT NULL,
+>     type VARCHAR(20) NOT NULL,
+>     source VARCHAR(20) NOT NULL,
+>     category VARCHAR(120) NOT NULL,
+>     amount DECIMAL(12,4) NOT NULL,
+>     note TEXT,
+>     transacted_at DATE NOT NULL
+> );
+>
+> CREATE TABLE budgets (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     coffee_shop_id INT NOT NULL,
+>     name VARCHAR(150) NOT NULL,
+>     period_start DATE NOT NULL,
+>     period_end DATE NOT NULL,
+>     created_at DATETIME NOT NULL
+> );
+>
+> CREATE TABLE budget_items (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     budget_id INT NOT NULL,
+>     category VARCHAR(120) NOT NULL,
+>     amount_plan DECIMAL(12,4) NOT NULL,
+>     type VARCHAR(20) NOT NULL
+> );
+> ```
+
+## 4. Настройка конфигурации
+
+1. В корне сайта откройте файл `.env.php`.
+2. Внесите изменения в массиве `db`:
+   - `driver` → `mysql` или `pgsql`
+   - `host`, `port`, `database`, `username`, `password`
+3. В массиве `app`:
+   - `base_url` → домен сайта (например, `https://coffee.example.com`)
+   - `admin_email` → email администратора (этот пользователь получит доступ к админке тарифов)
+4. В массиве `tinkoff`:
+   - `terminal_key` → ключ терминала
+   - `secret_key` → секретный ключ
+   - `notification_url` → адрес webhook (например, `https://coffee.example.com/api.php?route=payment/webhook`)
+   - `success_url` → `https://coffee.example.com/index.php?route=subscription/success`
+   - `fail_url` → `https://coffee.example.com/index.php?route=subscription/fail`
+   - `receipt` → параметры фискализации (если в Т‑Банке включены чеки)
+     - `taxation` → система налогообложения
+     - `tax` → ставка НДС
+     - `payment_method` → способ расчёта
+     - `payment_object` → предмет расчёта
+     - `email` или `phone` → контакт для чека
+
+## 5. Где и что менять в `.env.php`
+
+Файл `.env.php` находится в корне. Пример:
+
+```php
+'app' => [
+    'base_url' => 'https://coffee.example.com',
+    'admin_email' => 'admin@example.com',
+],
+'db' => [
+    'driver' => 'mysql',
+    'host' => 'localhost',
+    'port' => '3306',
+    'database' => 'coffee_fin',
+    'username' => 'db_user',
+    'password' => 'db_password',
+],
+```
+
+## 6. Проверка установки
+
+1. Откройте сайт в браузере: `https://ваш-домен/`.
+2. Нажмите **Регистрация**, создайте пользователя.
+3. Создайте кофейню.
+4. Попробуйте добавить ингредиент, напиток и рецепт.
+
+## 7. Настройка тарифов
+
+1. Войдите под email, который указан как `admin_email`.
+2. Откройте **Админка тарифов**.
+3. Отредактируйте названия, цены и длительность при необходимости.
+
+## 8. Проверка оплаты и webhook
+
+1. В кабинете Тинькофф укажите URL для webhook:
+   `https://ваш-домен/api.php?route=payment/webhook`
+2. Создайте платёж из личного кабинета пользователя (раздел **Тарифы и доступ**).
+3. После оплаты подписка появится в разделе **Подписки**.
+4. Если подписка не активируется — проверьте:
+   - правильность `terminal_key` и `secret_key`
+   - доступность webhook по внешнему адресу
+   - статус платежа в Тинькофф
+
+## 9. Импорт CSV
+
+1. В разделах **Закупки**, **Продажи**, **Расходы** нажмите **Импорт CSV**.
+2. Скачайте шаблон, заполните его и загрузите.
+3. Проверьте предпросмотр и нажмите **Импортировать**.
+
+## 10. Частые ошибки
+
+- **Белый экран** → проверьте правильность `.env.php` и параметры БД.
+- **Ошибки подключения к БД** → проверьте логин/пароль/хост.
+- **Webhook не работает** → проверьте, что домен доступен извне и URL указан полностью.
+- **Нет доступа к разделам** → убедитесь, что подписка активна (раздел **Подписки**).
+
+Готово! Проект готов к работе на shared-хостинге Beget.
