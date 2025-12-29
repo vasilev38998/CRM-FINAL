@@ -16,5 +16,9 @@
         <label>Средняя цена</label>
         <input type="number" step="0.01" name="price" value="0">
     </div>
+    <div class="form-group">
+        <label>Минимальный остаток</label>
+        <input type="number" step="0.01" name="min_qty" value="0">
+    </div>
     <button type="submit">Сохранить</button>
 </form>

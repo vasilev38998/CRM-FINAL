@@ -31,6 +31,10 @@ class DashboardController
         $netProfit = $grossProfit - $expenses;
         $profitability = $revenue > 0 ? ($netProfit / $revenue) * 100 : 0;
 
+        $stmt = db()->prepare('SELECT name, stock_qty, min_stock_qty, unit FROM ingredients WHERE coffee_shop_id = ? AND stock_qty <= min_stock_qty ORDER BY name');
+        $stmt->execute([$shopId]);
+        $lowStock = $stmt->fetchAll();
+
         view('dashboard', [
             'revenue' => $revenue,
             'cogs' => $cogs,
@@ -41,6 +45,7 @@ class DashboardController
             'profitability' => $profitability,
             'start' => $start,
             'end' => $end,
+            'lowStock' => $lowStock,
         ]);
     }
 }

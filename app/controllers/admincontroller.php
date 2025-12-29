@@ -3,6 +3,33 @@ namespace App\Controllers;
 
 class AdminController
 {
+    public function stats(): void
+    {
+        require_auth();
+        require_admin();
+        $totalUsers = (int) db()->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        $totalShops = (int) db()->query('SELECT COUNT(*) FROM coffee_shops')->fetchColumn();
+        $totalSubscriptions = (int) db()->query('SELECT COUNT(*) FROM subscriptions')->fetchColumn();
+        $activeSubscriptions = (int) db()->query("SELECT COUNT(*) FROM subscriptions WHERE status = 'active' AND end_at >= NOW()")->fetchColumn();
+        $paymentsTotal = (float) db()->query('SELECT COALESCE(SUM(amount), 0) FROM payments')->fetchColumn();
+
+        $stmt = db()->query('SELECT id, name, email, created_at FROM users ORDER BY created_at DESC LIMIT 10');
+        $recentUsers = $stmt->fetchAll();
+
+        $stmt = db()->query('SELECT subscriptions.*, users.email, plans.name AS plan_name FROM subscriptions JOIN users ON subscriptions.user_id = users.id JOIN plans ON subscriptions.plan_id = plans.id ORDER BY subscriptions.created_at DESC LIMIT 50');
+        $subscriptions = $stmt->fetchAll();
+
+        view('admin/stats', [
+            'totalUsers' => $totalUsers,
+            'totalShops' => $totalShops,
+            'totalSubscriptions' => $totalSubscriptions,
+            'activeSubscriptions' => $activeSubscriptions,
+            'paymentsTotal' => $paymentsTotal,
+            'recentUsers' => $recentUsers,
+            'subscriptions' => $subscriptions,
+        ]);
+    }
+
     public function plans(): void
     {
         require_auth();

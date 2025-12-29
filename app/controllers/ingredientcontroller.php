@@ -24,13 +24,14 @@ class IngredientController
             $unit = sanitize_string($_POST['unit'] ?? '');
             $qty = (float) ($_POST['qty'] ?? 0);
             $price = (float) ($_POST['price'] ?? 0);
+            $minQty = (float) ($_POST['min_qty'] ?? 0);
             if ($name === '' || $unit === '') {
                 flash('error', 'Заполните название и единицу измерения.');
                 view('ingredients/create');
                 return;
             }
-            $stmt = db()->prepare('INSERT INTO ingredients (coffee_shop_id, name, unit, stock_qty, avg_price, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
-            $stmt->execute([current_shop_id(), $name, $unit, $qty, $price]);
+            $stmt = db()->prepare('INSERT INTO ingredients (coffee_shop_id, name, unit, stock_qty, avg_price, min_stock_qty, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())');
+            $stmt->execute([current_shop_id(), $name, $unit, $qty, $price, $minQty]);
             redirect('index.php?route=ingredients');
         }
         view('ingredients/create');

@@ -63,4 +63,53 @@ class AnalyticsController
             'end' => $end,
         ]);
     }
+
+    public function network(): void
+    {
+        require_auth();
+        require_subscription();
+        $user = current_user();
+        $start = $_GET['from'] ?? date('Y-m-01');
+        $end = $_GET['to'] ?? date('Y-m-t');
+
+        $stmt = db()->prepare('SELECT id FROM coffee_shops WHERE user_id = ?');
+        $stmt->execute([$user['id']]);
+        $shopIds = array_column($stmt->fetchAll(), 'id');
+        if (!$shopIds) {
+            flash('error', 'Добавьте хотя бы одну кофейню.');
+            redirect('index.php?route=coffee/create');
+        }
+
+        $placeholders = implode(',', array_fill(0, count($shopIds), '?'));
+
+        $stmt = db()->prepare('SELECT COALESCE(SUM(total), 0) FROM sales WHERE coffee_shop_id IN (' . $placeholders . ') AND sold_at BETWEEN ? AND ?');
+        $stmt->execute(array_merge($shopIds, [$start, $end]));
+        $revenue = (float) $stmt->fetchColumn();
+
+        $stmt = db()->prepare('SELECT COALESCE(SUM(cogs), 0) FROM sales WHERE coffee_shop_id IN (' . $placeholders . ') AND sold_at BETWEEN ? AND ?');
+        $stmt->execute(array_merge($shopIds, [$start, $end]));
+        $cogs = (float) $stmt->fetchColumn();
+
+        $grossProfit = $revenue - $cogs;
+        $grossMargin = $revenue > 0 ? ($grossProfit / $revenue) * 100 : 0;
+
+        $stmt = db()->prepare('SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE coffee_shop_id IN (' . $placeholders . ') AND spent_at BETWEEN ? AND ?');
+        $stmt->execute(array_merge($shopIds, [$start, $end]));
+        $expenses = (float) $stmt->fetchColumn();
+
+        $netProfit = $grossProfit - $expenses;
+        $profitability = $revenue > 0 ? ($netProfit / $revenue) * 100 : 0;
+
+        view('analytics/network', [
+            'revenue' => $revenue,
+            'cogs' => $cogs,
+            'grossProfit' => $grossProfit,
+            'grossMargin' => $grossMargin,
+            'expenses' => $expenses,
+            'netProfit' => $netProfit,
+            'profitability' => $profitability,
+            'start' => $start,
+            'end' => $end,
+        ]);
+    }
 }

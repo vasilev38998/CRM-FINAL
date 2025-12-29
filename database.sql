@@ -58,6 +58,7 @@ CREATE TABLE ingredients (
     unit VARCHAR(50) NOT NULL,
     stock_qty DECIMAL(12,4) NOT NULL DEFAULT 0,
     avg_price DECIMAL(12,4) NOT NULL DEFAULT 0,
+    min_stock_qty DECIMAL(12,4) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL,
     FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
 );
@@ -115,6 +116,37 @@ CREATE TABLE expenses (
     note TEXT,
     spent_at DATE NOT NULL,
     FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
+);
+
+CREATE TABLE cash_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    coffee_shop_id INT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    source VARCHAR(20) NOT NULL,
+    category VARCHAR(120) NOT NULL,
+    amount DECIMAL(12,4) NOT NULL,
+    note TEXT,
+    transacted_at DATE NOT NULL,
+    FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
+);
+
+CREATE TABLE budgets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    coffee_shop_id INT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (coffee_shop_id) REFERENCES coffee_shops(id)
+);
+
+CREATE TABLE budget_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    budget_id INT NOT NULL,
+    category VARCHAR(120) NOT NULL,
+    amount_plan DECIMAL(12,4) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    FOREIGN KEY (budget_id) REFERENCES budgets(id)
 );
 
 CREATE TABLE password_resets (

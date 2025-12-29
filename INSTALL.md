@@ -34,8 +34,45 @@
 3. Вкладка **Импорт** → загрузите файл `database.sql` из корня сайта.
 4. Нажмите **Выполнить**.
 
-> Если вы уже устанавливали предыдущую версию проекта, добавьте в таблицу `payments` поле `processed_at` через phpMyAdmin:\n>
-> ```sql\n> ALTER TABLE payments ADD COLUMN processed_at DATETIME NULL;\n> ```
+> Если вы уже устанавливали предыдущую версию проекта, добавьте в таблицу `payments` поле `processed_at` через phpMyAdmin:
+>
+> ```sql
+> ALTER TABLE payments ADD COLUMN processed_at DATETIME NULL;
+> ```
+>
+> Для обновления до версии с бюджетами/кассой/минимальными остатками выполните:
+>
+> ```sql
+> ALTER TABLE ingredients ADD COLUMN min_stock_qty DECIMAL(12,4) NOT NULL DEFAULT 0;
+>
+> CREATE TABLE cash_transactions (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     coffee_shop_id INT NOT NULL,
+>     type VARCHAR(20) NOT NULL,
+>     source VARCHAR(20) NOT NULL,
+>     category VARCHAR(120) NOT NULL,
+>     amount DECIMAL(12,4) NOT NULL,
+>     note TEXT,
+>     transacted_at DATE NOT NULL
+> );
+>
+> CREATE TABLE budgets (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     coffee_shop_id INT NOT NULL,
+>     name VARCHAR(150) NOT NULL,
+>     period_start DATE NOT NULL,
+>     period_end DATE NOT NULL,
+>     created_at DATETIME NOT NULL
+> );
+>
+> CREATE TABLE budget_items (
+>     id INT AUTO_INCREMENT PRIMARY KEY,
+>     budget_id INT NOT NULL,
+>     category VARCHAR(120) NOT NULL,
+>     amount_plan DECIMAL(12,4) NOT NULL,
+>     type VARCHAR(20) NOT NULL
+> );
+> ```
 
 ## 4. Настройка конфигурации
 

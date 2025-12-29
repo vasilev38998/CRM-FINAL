@@ -15,13 +15,18 @@
             <a href="index.php?route=ingredients">Склад</a>
             <a href="index.php?route=purchases">Закупки</a>
             <a href="index.php?route=products">Напитки</a>
+            <a href="index.php?route=products/pricing">Калькулятор цен</a>
             <a href="index.php?route=recipes">Рецепты</a>
             <a href="index.php?route=sales">Продажи</a>
             <a href="index.php?route=expenses">Расходы</a>
+            <a href="index.php?route=cash">ДДС</a>
+            <a href="index.php?route=budgets">Бюджеты</a>
             <a href="index.php?route=analytics/pnl">P&L</a>
+            <a href="index.php?route=analytics/network">Сводная аналитика</a>
             <a href="index.php?route=subscription/manage">Подписки</a>
             <a href="index.php?route=coffee/select">Кофейни</a>
             <?php if (is_admin()): ?>
+                <a href="index.php?route=admin/stats">Админка: сводка</a>
                 <a href="index.php?route=admin/plans">Админка тарифов</a>
             <?php endif; ?>
             <a href="index.php?route=auth/logout">Выход</a>

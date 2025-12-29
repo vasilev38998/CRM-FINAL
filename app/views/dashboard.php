@@ -41,3 +41,27 @@
         <p><?php echo number_format($profitability, 2, ',', ' '); ?> %</p>
     </div>
 </div>
+
+<h2>Ингредиенты с низким остатком</h2>
+<?php if ($lowStock): ?>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ингредиент</th>
+                <th>Остаток</th>
+                <th>Мин. остаток</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($lowStock as $item): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($item['name']); ?></td>
+                    <td><?php echo number_format((float) $item['stock_qty'], 2, ',', ' ') . ' ' . htmlspecialchars($item['unit']); ?></td>
+                    <td><?php echo number_format((float) $item['min_stock_qty'], 2, ',', ' ') . ' ' . htmlspecialchars($item['unit']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php else: ?>
+    <p>Все ингредиенты выше минимального остатка.</p>
+<?php endif; ?>
